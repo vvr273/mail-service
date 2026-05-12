@@ -6,7 +6,16 @@ import { env } from "./config/env.js";
 
 const app = express();
 
-app.use(cors({ origin: env.frontendUrl, credentials: true }));
+const allowedOrigin = String(env.frontendUrl || "").replace(/\/$/, "");
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      return callback(null, origin.replace(/\/$/, "") === allowedOrigin);
+    },
+    credentials: true
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
