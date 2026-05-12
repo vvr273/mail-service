@@ -14,25 +14,32 @@ import { requirePasswordReset, requireSemiVerified, requireSession } from "../mi
 
 const router = express.Router();
 
+const isProduction = process.env.NODE_ENV === "production";
+const cookieOptions = {
+  httpOnly: true,
+  sameSite: isProduction ? "none" : "lax",
+  secure: isProduction
+};
+
 function setSessionCookie(res, user) {
   const token = jwt.sign({ sub: String(user._id), type: "session" }, env.jwtSecret, { expiresIn: "7d" });
-  res.cookie("sessionToken", token, { httpOnly: true, sameSite: "lax" });
+  res.cookie("sessionToken", token, cookieOptions);
 }
 
 function setVerificationCookie(res, user) {
   const token = jwt.sign({ sub: String(user._id), type: "verify" }, env.jwtSecret, { expiresIn: "30m" });
-  res.cookie("verificationToken", token, { httpOnly: true, sameSite: "lax" });
+  res.cookie("verificationToken", token, cookieOptions);
 }
 
 function setPasswordResetCookie(res, user) {
   const token = jwt.sign({ sub: String(user._id), type: "password_reset" }, env.jwtSecret, { expiresIn: "30m" });
-  res.cookie("passwordResetToken", token, { httpOnly: true, sameSite: "lax" });
+  res.cookie("passwordResetToken", token, cookieOptions);
 }
 
 function clearAllAuthCookies(res) {
-  res.clearCookie("sessionToken");
-  res.clearCookie("verificationToken");
-  res.clearCookie("passwordResetToken");
+  res.clearCookie("sessionToken", cookieOptions);
+  res.clearCookie("verificationToken", cookieOptions);
+  res.clearCookie("passwordResetToken", cookieOptions);
 }
 
 async function issueEmailVerification(user) {
