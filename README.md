@@ -17,6 +17,22 @@
    - `cd frontend && npm run dev`
 4. Open `http://localhost:5173`
 
+## Brevo SMTP setup
+1. In Brevo, verify a sender email/domain under sender settings. `MAIL_FROM` must use that verified sender.
+2. Create an SMTP key in Brevo under SMTP/API settings.
+3. Copy the Brevo env sample:
+   - `cp backend/.env.brevo.example backend/.env`
+4. Configure `backend/.env`:
+   - `SMTP_HOST=smtp-relay.brevo.com`
+   - `SMTP_PORT=587`
+   - `SMTP_SECURE=false`
+   - `SMTP_USER=<your Brevo SMTP login>`
+   - `SMTP_PASS=<your Brevo SMTP key>`
+   - `MAIL_FROM="Mail Service <your verified sender email>"`
+5. Restart the backend after changing env values.
+
+The current backend sends verification and OTP emails through Nodemailer using these SMTP variables.
+
 ## Main backend routes
 - `POST /auth/signup`
 - `POST /auth/login`
