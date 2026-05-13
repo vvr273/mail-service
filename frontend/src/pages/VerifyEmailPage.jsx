@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { api } from "../api/client";
+import { useSearchParams } from "react-router-dom";
+import { API_BASE } from "../api/client";
 
 export default function VerifyEmailPage() {
   const [params] = useSearchParams();
-  const navigate = useNavigate();
   const [message, setMessage] = useState("Verifying email link...");
 
   useEffect(() => {
@@ -14,17 +13,10 @@ export default function VerifyEmailPage() {
         setMessage("Missing token");
         return;
       }
-      try {
-        await fetch(`http://localhost:5000/auth/verify-email-link?token=${encodeURIComponent(token)}`, {
-          credentials: "include"
-        });
-        navigate("/verification");
-      } catch {
-        setMessage("Verification link failed");
-      }
+      window.location.assign(`${API_BASE}/auth/verify-email-link?token=${encodeURIComponent(token)}`);
     }
     verify();
-  }, [params, navigate]);
+  }, [params]);
 
   return <p>{message}</p>;
 }
